@@ -137,6 +137,8 @@ public class TunlView extends View {
         info3.setStartValue(getmValue(info3.getStartTime()));
         info3.setEndValue(getmValue(info3.getEndTime()));
 
+
+
         list.add(info1);
         list.add(info2);
         list.add(info3);
