@@ -74,7 +74,7 @@ public class TunlView extends View {
     public static final int Mode_HOUR = 2 ;
 
 
-    private static final int MOD_TYPE_TEN = 360; // 30*60/5 一格大刻度量级(半个小时)
+    private static final int MOD_TYPE_TEN = 720; // 30*60/5 一格大刻度量级(1个小时)
 
     private static final int ITEM_250_SECOND_DIVIDER = 2;// 250秒的单位宽度
 
@@ -246,15 +246,15 @@ public class TunlView extends View {
 
         for (int i = 0; drawCount < width * 2; i++) {
             xPosition = (mWidth / 2 + mMove) + i*mDensity*(mLineDivider);
-            if ((ITME_SECOND*zoomLevel*(mValue + i)) % (mModType*zoomLevel) == 0) {
+            if ((ITME_SECOND*zoomLevel*(mValue + i)) % mModType == 0) {
                 canvas.drawLine(xPosition, 0, xPosition, mDensity * ITEM_MAX_HEIGHT, linePaint);
-                if(((ITME_SECOND*zoomLevel*(mValue + i)) /(mModType*zoomLevel) % useString.length)<0){
-                    canvas.drawText(useString[(useString.length)+((ITME_SECOND*zoomLevel*(mValue + i)) /(mModType*zoomLevel) % (useString.length))],countLeftStart(mValue + i, xPosition, textWidth), getHeight() - textWidth, textPaint);
+                if(((ITME_SECOND*zoomLevel*(mValue + i)) /mModType % 24)<0){
+                    canvas.drawText(useString[24+((ITME_SECOND*zoomLevel*(mValue + i)) /mModType % 24)],countLeftStart(mValue + i, xPosition, textWidth), getHeight() - textWidth, textPaint);
                 }else{
-                    canvas.drawText(useString[(ITME_SECOND*zoomLevel*(mValue + i)) /(mModType*zoomLevel) % (useString.length)],countLeftStart(mValue + i, xPosition, textWidth), getHeight() - textWidth, textPaint);
+                    canvas.drawText(useString[(ITME_SECOND*zoomLevel*(mValue + i)) /mModType % 24],countLeftStart(mValue + i, xPosition, textWidth), getHeight() - textWidth, textPaint);
                 }
             }else {
-                if(ITME_SECOND*zoomLevel*(mValue + i) % (60*zoomLevel)==0){
+                if(ITME_SECOND*zoomLevel*(mValue + i) % 60==0){
                     canvas.drawLine(xPosition, 0, xPosition, mDensity * ITEM_MIN_HEIGHT, linePaint);
                 }
             }
@@ -269,15 +269,15 @@ public class TunlView extends View {
             }
 
             xPosition = (mWidth / 2 + mMove) - i*mDensity*(mLineDivider);
-            if ((ITME_SECOND*zoomLevel*(mValue - i)) % (mModType*zoomLevel) == 0) {
+            if ((ITME_SECOND*zoomLevel*(mValue - i)) % mModType == 0) {
                 canvas.drawLine(xPosition, 0, xPosition, mDensity * ITEM_MAX_HEIGHT, linePaint);
-                if(((ITME_SECOND*zoomLevel*(mValue - i)) /(mModType*zoomLevel) % (useString.length))<0){
-                    canvas.drawText(useString[(useString.length) + ((ITME_SECOND*zoomLevel*(mValue - i)) /(mModType*zoomLevel) % (useString.length))],countLeftStart(mValue - i, xPosition, textWidth), getHeight() - textWidth, textPaint);
+                if(((ITME_SECOND*zoomLevel*(mValue - i)) /mModType % 24)<0){
+                    canvas.drawText(useString[24 + ((ITME_SECOND*zoomLevel*(mValue - i)) /mModType % 24)],countLeftStart(mValue - i, xPosition, textWidth), getHeight() - textWidth, textPaint);
                 }else{
-                    canvas.drawText(useString[(ITME_SECOND*zoomLevel*(mValue - i)) /(mModType*zoomLevel) % (useString.length)],countLeftStart(mValue - i, xPosition, textWidth), getHeight() - textWidth, textPaint);
+                    canvas.drawText(useString[(ITME_SECOND*zoomLevel*(mValue - i)) /mModType % 24],countLeftStart(mValue - i, xPosition, textWidth), getHeight() - textWidth, textPaint);
                 }
             } else {
-                if(ITME_SECOND*zoomLevel*(mValue - i) % (60*zoomLevel)==0){
+                if(ITME_SECOND*zoomLevel*(mValue - i) % 60==0){
                     canvas.drawLine(xPosition, 0, xPosition, mDensity * ITEM_MIN_HEIGHT, linePaint);
                 }
             }
@@ -365,14 +365,8 @@ public class TunlView extends View {
                         currentStatus = STATUS_ZOOM_IN;
                         AXLog.e("wzytest","拖动条缩放fingerDis" +fingerDis +" lastFingerDis"+lastFingerDis);
                     }
-                    if(fingerDis/lastFingerDis>2){
-                        setMode(0);
-                        invalidate();
-                    }
-                    if(fingerDis/lastFingerDis<2){
-                        setMode(2);
-                        invalidate();
-                    }
+                    setZoomLevel(zoomLevel*(lastFingerDis/fingerDis));
+                    invalidate();
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:
@@ -480,23 +474,27 @@ public class TunlView extends View {
         return (int) (time-l1)/(5*ITME_SECOND*1000*zoomLevel);
     }
 
+    public static void setZoomLevel(double zoomLevel) {
+        TunlView.zoomLevel = (int)zoomLevel;
+    }
+
     public void setMode(int mode){
         switch (mode){
             case Mode_DAY:
-                zoomLevel = 24 ;
-                useString = timeString4;
-                initData();
+                zoomLevel = 30 ;
+                //useString = timeString4;
+               // initData();
                 break;
             case Mode_HOUR:
                 zoomLevel = 2 ;
-                useString = timeString2;
-                initData();
+               // useString = timeString2;
+              //  initData();
                 AXLog.e("wzytest","list on Mode_HOUR:"+list);
                 break;
             case Mode_MINUTE:
                 zoomLevel = 1 ;
-                useString = timeString;
-                initData();
+               // useString = timeString;
+              //  initData();
                 AXLog.e("wzytest","list on Mode_MINUTE:"+list);
                 break;
         }
