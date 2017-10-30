@@ -14,6 +14,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.tunlview.view.TunlView.ZOOMLEVEL_INIT_1;
+import static com.tunlview.view.TunlView.ZOOMLEVEL_INIT_2;
+import static com.tunlview.view.TunlView.ZOOMLEVEL_INIT_3;
+import static com.tunlview.view.TunlView.ZOOMLEVEL_INIT_4;
+import static com.tunlview.view.TunlView.ZOOMLEVEL_INIT_5;
 import static com.tunlview.view.TunlView.getTime;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,7 +30,13 @@ public class MainActivity extends AppCompatActivity {
     Button tv1 ;
     Button tv2 ;
     Button tv3 ;
+    Button tv4 ;
+    Button tv5 ;
 
+    Button mode1;
+    Button mode2;
+    Button mode3;
+    Button mode4;
     Handler handler =  new Handler(){
 
         @Override
@@ -49,29 +60,76 @@ public class MainActivity extends AppCompatActivity {
         textView = (TextView) findViewById(R.id.tv_time);
         tunlView = (TunlView) findViewById(R.id.tunlview);
         textView.setText(""+tunlView.getValue());
-        tv1 = (Button) findViewById(R.id.tv_minu);
-        tv2 = (Button) findViewById(R.id.tv_hour);
-        tv3 = (Button) findViewById(R.id.tv_day);
-
+        tv1 = (Button) findViewById(R.id.tv_1);
+        tv2 = (Button) findViewById(R.id.tv_2);
+        tv3 = (Button) findViewById(R.id.tv_3);
+        tv4 = (Button) findViewById(R.id.tv_4);
+        tv5 = (Button) findViewById(R.id.tv_5);
+        mode1 = (Button) findViewById(R.id.mode1);
+        mode2 = (Button) findViewById(R.id.mode2);
+        mode3 = (Button) findViewById(R.id.mode3);
+        mode4 = (Button) findViewById(R.id.mode4);
         tv1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tunlView.setMode(TunlView.Mode_MINUTE);
+                tunlView.setValueToSencond(ZOOMLEVEL_INIT_1);
+                tunlView.postInvalidate();
             }
         });
         tv2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tunlView.setMode(TunlView.Mode_HOUR);
+                tunlView.setValueToSencond(ZOOMLEVEL_INIT_2);
+                tunlView.postInvalidate();
+
             }
         });
         tv3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tunlView.setMode(TunlView.Mode_DAY);
+                tunlView.setValueToSencond(ZOOMLEVEL_INIT_3);
+                tunlView.postInvalidate();
+            }
+        });
+        tv4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tunlView.setValueToSencond(ZOOMLEVEL_INIT_4);
+                tunlView.postInvalidate();
+            }
+        });
+        tv5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tunlView.setValueToSencond(ZOOMLEVEL_INIT_5);
+                tunlView.postInvalidate();
             }
         });
 
+        mode1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tunlView.setMode(TunlView.Mode_1);
+            }
+        });
+        mode2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tunlView.setMode(TunlView.Mode_2);
+            }
+        });
+        mode3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tunlView.setMode(TunlView.Mode_3);
+            }
+        });
+        mode4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tunlView.setMode(TunlView.Mode_4);
+            }
+        });
         tunlView.setmListener(new OnValueChangeListener() {
             @Override
             public void onValueChange(float value) {

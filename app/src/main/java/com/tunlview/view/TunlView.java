@@ -69,30 +69,39 @@ public class TunlView extends View {
     private int currentStatus;
 
 
-    public static final int Mode_DAY = 0  ;
-    public static final int Mode_MINUTE = 1  ;
-    public static final int Mode_HOUR = 2 ;
+    public static final int Mode_1 = 1;
+    public static final int Mode_2 = 2;
+    public static final int Mode_3 = 3;
+    public static final int Mode_4 = 4;
+    public static final int Mode_5 = 5;
 
-
-    private static final int MOD_TYPE_TEN = 720; // 30*60/5 一格大刻度量级(1个小时)
 
     private static final int ITEM_250_SECOND_DIVIDER = 2;// 250秒的单位宽度
 
-    private static final float TEXT_SIZE = 12 ;
+    private static final float TEXT_SIZE = 12;
 
-    public int mWidth ;
-    public int mHeight ;
+    public int mWidth;
+    public int mHeight;
     int mlastX, mMove;
 
-    private static int ITME_SECOND = 5;  // 每个value代表多少秒
+    public static final int ZOOMLEVEL_INIT_1 = 10;
+    public static final int ZOOMLEVEL_INIT_2 = 30;
+    public static final int ZOOMLEVEL_INIT_3 = 80;
+    public static final int ZOOMLEVEL_INIT_4 = 120;
+    public static final int ZOOMLEVEL_INIT_5 = 240;
 
-    public static int zoomLevel = 2;
+    private int ZOOMLEVEL_INIT = ZOOMLEVEL_INIT_1;
 
-    private int REFRESH_TIME = 5*1000*ITME_SECOND*zoomLevel;
+    public static int valueToSencond = ZOOMLEVEL_INIT_2;  //每个value代表多少秒
+
+    public static int level = 1;  //缩放级别
+
+    private int REFRESH_TIME = 5 * 1000 * valueToSencond;
 
     int mValue;
 
-    int  mModType = MOD_TYPE_TEN, mLineDivider = ITEM_250_SECOND_DIVIDER;
+    int modType = 360 ,mModType = 360; // 30*60/5 一格大刻度量级(1个小时)
+    int mLineDivider = ITEM_250_SECOND_DIVIDER;
 
     private float mDensity;
     private float ITEM_MAX_HEIGHT = 30;
@@ -103,20 +112,25 @@ public class TunlView extends View {
     SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     List<OneDayRecordInfo> list = new ArrayList<>();
-    private String[] timeString = {"00:00", "00:30", "01:00", "01:30", "02:00", "02:30", "03:00", "03:30", "04:00", "04:30",
+    private String[] timeString1 = {"00:00", "00:30", "01:00", "01:30", "02:00", "02:30", "03:00", "03:30", "04:00", "04:30",
             "05:00", "05:30", "06:00", "06:30", "07:00", "07:30", "08:00", "08:30", "09:00", "09:30", "10:00", "10:30",
             "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
             "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30",
             "23:00", "23:30"};
 
-    private String[] timeString2 = {"00:00", "01:00", "02:00","03:00", "04:00", "05:00", "06:00",  "07:00", "08:00", "09:00",  "10:00",
-            "11:00",  "12:00", "13:00",  "14:00",  "15:00", "16:00", "17:00", "18:00",  "19:00",  "20:00",  "21:00",  "22:00", "23:00",};
+    private String[] timeString2 = {"00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00",
+            "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00",};
 
-    private String[] timeString3 = {"00:00",  "04:00",  "08:00",  "12:00", "16:00",  "20:00"};
+    private String[] timeString3 = {"00:00", "04:00", "08:00", "12:00", "16:00", "20:00"};
 
-    private String[] timeString4 = {"00:00",  "12:00"};
+    private String[] timeString4 = {"00:00", "12:00"};
 
-    public String[] useString ;
+    private String[] timeString5 = {"00:00"};
+    public String[] useString;
+    private float scaledRatio;
+    private int newlevel;
+
+
     public OnValueChangeListener getmListener() {
         return mListener;
     }
@@ -145,19 +159,20 @@ public class TunlView extends View {
         postDelayed(new Runnable() {
             @Override
             public void run() {
-                postDelayed(this,REFRESH_TIME*zoomLevel);
+                postDelayed(this, REFRESH_TIME * valueToSencond);
                 mValue++;
                 postInvalidate();
             }
-        },REFRESH_TIME*zoomLevel);
+        }, REFRESH_TIME * valueToSencond);
         initData();
         shadowPaint.setStrokeWidth(4);
         shadowPaint.setColor(Color.parseColor("#83D7DD"));
         shadowPaint.setAlpha(101);
+        setMode(Mode_3);
     }
 
 
-    public void initData(){
+    public void initData() {
         list.clear();
         mValue = getNowValue();
 
@@ -165,14 +180,13 @@ public class TunlView extends View {
         OneDayRecordInfo info1 = new OneDayRecordInfo();
 
 
-
         OneDayRecordInfo info2 = new OneDayRecordInfo();
-        info2.setStartTime(d.getTime() - 60*60*1000*8);
-        info2.setEndTime(d.getTime() - 60*60*1000*7);
+        info2.setStartTime(d.getTime() - 60 * 60 * 1000 * 8);
+        info2.setEndTime(d.getTime() - 60 * 60 * 1000 * 7);
         info2.setStartValue(getmValue(info2.getStartTime()));
         info2.setEndValue(getmValue(info2.getEndTime()));
 
-        info1.setStartTime( d.getTime() - 60*60*1000);
+        info1.setStartTime(d.getTime() - 60 * 60 * 1000);
         info1.setEndTime(d.getTime());
         // info1.setCurrentDate("2017-10-23");
         info1.setStartValue(getmValue(info1.getStartTime()));
@@ -184,28 +198,29 @@ public class TunlView extends View {
         postDelayed(new Runnable() {
             @Override
             public void run() {
-                postDelayed(this,60*1000);
+                postDelayed(this, 60 * 1000);
                 OneDayRecordInfo info = new OneDayRecordInfo();
-                info.setStartTime(System.currentTimeMillis()-60*1000);
+                info.setStartTime(System.currentTimeMillis() - 60 * 1000);
                 info.setEndTime(System.currentTimeMillis());
                 info.setStartValue(getmValue(info.getStartTime()));
                 info.setEndValue(getmValue(info.getEndTime()));
-                AXLog.e("wzytest","info.StartTime:"+info.getStartTime()+" info.getEndTime():"+info.getEndTime());
+                AXLog.e("wzytest", "info.StartTime:" + info.getStartTime() + " info.getEndTime():" + info.getEndTime());
                 addNoRepeatList(info);
                 postInvalidate();
             }
 
-        },60*1000);
+        }, 60 * 1000);
 
     }
-    private void addNoRepeatList(OneDayRecordInfo info) {
-        OneDayRecordInfo lastInfo =  list.get(list.size()-1);
 
-        if(info.getStartTime()-lastInfo.getEndTime()< 1000){
-            AXLog.e("wzytest","前一个数据的最后时间小于当前的开始时间不超过一秒");
+    private void addNoRepeatList(OneDayRecordInfo info) {
+        OneDayRecordInfo lastInfo = list.get(list.size() - 1);
+
+        if (info.getStartTime() - lastInfo.getEndTime() < 1000) {
+            AXLog.e("wzytest", "前一个数据的最后时间小于当前的开始时间不超过一秒");
             lastInfo.setEndTime(info.getEndTime());
             lastInfo.setEndValue(info.getEndValue());
-        }else{
+        } else {
             list.add(info);
         }
     }
@@ -232,7 +247,7 @@ public class TunlView extends View {
 
 
     //划线
-    public void drawScaleLine(Canvas canvas){
+    public void drawScaleLine(Canvas canvas) {
 //        AXLog.e("wzytest","drawScaleLine..."+mValue);
         linePaint.setStrokeWidth(2);
         linePaint.setColor(Color.BLACK);
@@ -242,42 +257,44 @@ public class TunlView extends View {
 
         int width = mWidth, drawCount = 0;
 
-        float xPosition = 0;
+        float xPosition;
 
         for (int i = 0; drawCount < width * 2; i++) {
-            xPosition = (mWidth / 2 + mMove) + i*mDensity*(mLineDivider);
-            if ((ITME_SECOND*zoomLevel*(mValue + i)) % mModType == 0) {
+            xPosition = (mWidth / 2 + mMove) + i * mDensity * (mLineDivider);
+            if ((valueToSencond * (mValue + i)) % mModType == 0) {
                 canvas.drawLine(xPosition, 0, xPosition, mDensity * ITEM_MAX_HEIGHT, linePaint);
-                if(((ITME_SECOND*zoomLevel*(mValue + i)) /mModType % 24)<0){
-                    canvas.drawText(useString[24+((ITME_SECOND*zoomLevel*(mValue + i)) /mModType % 24)],countLeftStart(mValue + i, xPosition, textWidth), getHeight() - textWidth, textPaint);
-                }else{
-                    canvas.drawText(useString[(ITME_SECOND*zoomLevel*(mValue + i)) /mModType % 24],countLeftStart(mValue + i, xPosition, textWidth), getHeight() - textWidth, textPaint);
+                if (((valueToSencond * (mValue + i)) / mModType % useString.length) < 0) {
+                    canvas.drawText(useString[useString.length + ((valueToSencond * (mValue + i)) / mModType % useString.length)], countLeftStart(mValue + i, xPosition, textWidth), getHeight() - textWidth, textPaint);
+                } else {
+                    canvas.drawText(useString[(valueToSencond * (mValue + i)) / mModType % useString.length], countLeftStart(mValue + i, xPosition, textWidth), getHeight() - textWidth, textPaint);
                 }
-            }else {
-                if(ITME_SECOND*zoomLevel*(mValue + i) % 60==0){
+            } else {
+//                if (valueToSencond * (mValue + i) % (60 * level) == 0) {
+                if (valueToSencond * (mValue + i) % (60 ) == 0) {
                     canvas.drawLine(xPosition, 0, xPosition, mDensity * ITEM_MIN_HEIGHT, linePaint);
                 }
             }
             // TODO: 2017/10/24  画阴影面积
             for (int j = 0; j < list.size(); j++) {
-                OneDayRecordInfo info  = list.get(j);
+                OneDayRecordInfo info = list.get(j);
                 int startvalue = info.getStartValue();
                 int endvalue = info.getEndValue();
-                if(mValue+i<=endvalue && mValue+i>=startvalue){
-                    canvas.drawLine(xPosition, 0, xPosition , mHeight, shadowPaint);
+                if (mValue + i <= endvalue && mValue + i >= startvalue) {
+                    canvas.drawLine(xPosition, 0, xPosition, mHeight, shadowPaint);
                 }
             }
 
-            xPosition = (mWidth / 2 + mMove) - i*mDensity*(mLineDivider);
-            if ((ITME_SECOND*zoomLevel*(mValue - i)) % mModType == 0) {
+            xPosition = (mWidth / 2 + mMove) - i * mDensity * (mLineDivider);
+            if ((valueToSencond * (mValue - i)) % mModType == 0) {
                 canvas.drawLine(xPosition, 0, xPosition, mDensity * ITEM_MAX_HEIGHT, linePaint);
-                if(((ITME_SECOND*zoomLevel*(mValue - i)) /mModType % 24)<0){
-                    canvas.drawText(useString[24 + ((ITME_SECOND*zoomLevel*(mValue - i)) /mModType % 24)],countLeftStart(mValue - i, xPosition, textWidth), getHeight() - textWidth, textPaint);
-                }else{
-                    canvas.drawText(useString[(ITME_SECOND*zoomLevel*(mValue - i)) /mModType % 24],countLeftStart(mValue - i, xPosition, textWidth), getHeight() - textWidth, textPaint);
+                if (((valueToSencond * (mValue - i)) / mModType % useString.length) < 0) {
+                    canvas.drawText(useString[useString.length + ((valueToSencond * (mValue - i)) / mModType % useString.length)], countLeftStart(mValue - i, xPosition, textWidth), getHeight() - textWidth, textPaint);
+                } else {
+                    canvas.drawText(useString[(valueToSencond * (mValue - i)) / mModType % useString.length], countLeftStart(mValue - i, xPosition, textWidth), getHeight() - textWidth, textPaint);
                 }
             } else {
-                if(ITME_SECOND*zoomLevel*(mValue - i) % 60==0){
+                //if (valueToSencond * (mValue - i) % (60 * level) == 0) {
+                if (valueToSencond * (mValue - i) % (60 ) == 0) {
                     canvas.drawLine(xPosition, 0, xPosition, mDensity * ITEM_MIN_HEIGHT, linePaint);
                 }
             }
@@ -285,19 +302,18 @@ public class TunlView extends View {
             // TODO: 2017/10/24  画阴影面积
             //canvas.drawLine(xPosition, 0, xPosition + ITEM_ONE_DIVIDER, mHeight, shadowPaint);
             for (int j = 0; j < list.size(); j++) {
-                OneDayRecordInfo info  = list.get(j);
+                OneDayRecordInfo info = list.get(j);
                 int startvalue = info.getStartValue();
                 int endvalue = info.getEndValue();
-                if(mValue-i<=endvalue && mValue-i>=startvalue){
-                    canvas.drawLine(xPosition, 0, xPosition , mHeight, shadowPaint);
+                if (mValue - i <= endvalue && mValue - i >= startvalue) {
+                    canvas.drawLine(xPosition, 0, xPosition, mHeight, shadowPaint);
                 }
             }
-            drawCount+=mDensity*(mLineDivider);
+            drawCount += mDensity * (mLineDivider);
         }
 
 
     }
-
 
 
     /**
@@ -309,8 +325,8 @@ public class TunlView extends View {
      * @return
      */
     private float countLeftStart(int value, float xPosition, float textWidth) {
-        float xp ;
-        xp = xPosition - (textWidth * 5/2 ); //从2.5个字开始写
+        float xp;
+        xp = xPosition - (textWidth * 5 / 2); //从2.5个字开始写
         return xp;
     }
 
@@ -318,59 +334,90 @@ public class TunlView extends View {
     public boolean onTouchEvent(MotionEvent event) {
 
         int xPosition = (int) event.getX();
-        int xMove ;
-        switch (event.getActionMasked()){
+        int xMove;
+        switch (event.getActionMasked()) {
             case MotionEvent.ACTION_POINTER_DOWN:
                 if (event.getPointerCount() == 2) {
                     // 当有两个手指按在屏幕上时，计算两指之间的距离
                     lastFingerDis = distanceBetweenFingers(event);
-                    AXLog.e("wzytest","当有两个手指按在屏幕上时，计算两指之间的距离"+lastFingerDis);
+                    AXLog.e("wzytest", "当有两个手指按在屏幕上时，计算两指之间的距离" + lastFingerDis);
                 }
                 break;
             case MotionEvent.ACTION_DOWN:
                 if (event.getPointerCount() == 2) {
                     // 当有两个手指按在屏幕上时，计算两指之间的距离
                     lastFingerDis = distanceBetweenFingers(event);
-                    AXLog.e("wzytest","当有两个手指按在屏幕上时，计算两指之间的距离"+lastFingerDis);
+                    AXLog.e("wzytest", "当有两个手指按在屏幕上时，计算两指之间的距离" + lastFingerDis);
                 }
                 mlastX = xPosition;
                 mMove = 0;
-                Log.d("wzytest","ACTION_DOWN");
+                Log.d("wzytest", "ACTION_DOWN");
                 break;
             case MotionEvent.ACTION_UP:
                 //当滑动到停止，改变当前刻度值
-                xMove = (int) (mMove/(mLineDivider * mDensity));
-                mValue-=xMove;
+                xMove = (int) (mMove / (mLineDivider * mDensity));
+                mValue -= xMove;
 ////                mValue = mValue <= 0 ? 0 : mValue;
 ////                mValue = mValue > mMaxValue ? mMaxValue : mValue;
                 notifyValueChange();
                 mMove = 0;
                 break;
             case MotionEvent.ACTION_MOVE:
-                if(event.getPointerCount() == 1){
-                    AXLog.e("wzytest","mvalue:"+mValue);
-                    mMove = xPosition- mlastX;
-                    xMove = (int) (mMove/(mLineDivider * mDensity));
-                    mValue-=xMove;
+                if (event.getPointerCount() == 1) {
+                    AXLog.e("wzytest", "mvalue:" + mValue);
+                    mMove = xPosition - mlastX;
+                    xMove = (int) (mMove / (mLineDivider * mDensity));
+                    mValue -= xMove;
                     notifyValueChange();
-                    postInvalidate();
-                }else if(event.getPointerCount() == 2){
+                    invalidate();
+                } else if (event.getPointerCount() == 2) {
+                    newlevel = valueToSencond;
                     // 有两个手指按在屏幕上移动时，为缩放状态
                     centerPointBetweenFingers(event);
                     double fingerDis = distanceBetweenFingers(event);
                     if (fingerDis > lastFingerDis) {
                         currentStatus = STATUS_ZOOM_OUT;
-                        AXLog.e("wzytest","拖动条扩大fingerDis" +fingerDis +" lastFingerDis"+lastFingerDis);
                     } else {
                         currentStatus = STATUS_ZOOM_IN;
-                        AXLog.e("wzytest","拖动条缩放fingerDis" +fingerDis +" lastFingerDis"+lastFingerDis);
                     }
-                    setZoomLevel(zoomLevel*(lastFingerDis/fingerDis));
-                    invalidate();
+                    AXLog.e("wzytest","newlevel:"+newlevel +" ZOOMLEVEL_INIT:"+ZOOMLEVEL_INIT);
+                    // 进行缩放倍数检查，最大只允许将图片放大4倍，最小可以缩小到初始化比例
+                    if ((currentStatus == STATUS_ZOOM_OUT && newlevel > ZOOMLEVEL_INIT / 4) ||
+                            (currentStatus == STATUS_ZOOM_IN && newlevel < ZOOMLEVEL_INIT * 6)) {
+                        scaledRatio = (float) (fingerDis / lastFingerDis);
+                        newlevel = (int) (newlevel/scaledRatio);
+
+                        AXLog.e("wzytest", "newlevel:" + newlevel);
+                        if (newlevel > 6 * ZOOMLEVEL_INIT) {
+                            newlevel = 6 * ZOOMLEVEL_INIT;
+                        } else if (newlevel < ZOOMLEVEL_INIT / 4) {
+                            newlevel = ZOOMLEVEL_INIT / 4;
+                        }
+                        AXLog.e("wzytest", "newlevel:" + newlevel);
+                        setValueToSencond(newlevel);
+                        // 调用onDraw()方法绘制图片
+                        invalidate();
+                        //lastFingerDis = fingerDis;
+                    }
+
+//                    int newlevel = valueToSencond;
+//                    if((fingerDis/lastFingerDis)<10.00&&(fingerDis / lastFingerDis)>0.1){
+//                        if( newlevel > 10*ZOOMLEVEL_INIT){
+//                            newlevel = 10*ZOOMLEVEL_INIT;
+//                        }else if(newlevel < 0.1*ZOOMLEVEL_INIT){
+//                            newlevel = (int) (0.1*ZOOMLEVEL_INIT);
+//                        }else{
+//                            newlevel = (int) (valueToSencond*(fingerDis/lastFingerDis));
+//                        }
+//                        AXLog.e("wzytest","newlevel:"+newlevel);
+//                        setValueToSencond(newlevel);
+//                    }
+//                    invalidate();
+//                    lastFingerDis = fingerDis;
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:
-                AXLog.e("wzytest","ACTION_CANCEL.......");
+                AXLog.e("wzytest", "ACTION_CANCEL.......");
                 break;
             default:
                 break;
@@ -382,7 +429,7 @@ public class TunlView extends View {
     private void notifyValueChange() {
 
         if (null != mListener) {
-                mListener.onValueChange(mValue);
+            mListener.onValueChange(mValue);
         }
     }
 
@@ -398,6 +445,7 @@ public class TunlView extends View {
 
     /**
      * 设置当前刻度值
+     *
      * @param mValue
      */
     public void setmValue(int mValue) {
@@ -410,13 +458,13 @@ public class TunlView extends View {
      * @param canvas
      */
     private void drawMiddleLine(Canvas canvas) {
-        int  indexWidth = 5;
+        int indexWidth = 5;
         String color = "#66999999";
         Paint redPaint = new Paint();
         redPaint.setStrokeWidth(indexWidth);
         redPaint.setColor(Color.RED);
-       // canvas.drawLine(mWidth / 2, 0, mWidth / 2 , mHeight, shadowPaint);
-       canvas.drawLine(mWidth / 2, 0, mWidth / 2, mHeight, redPaint);
+        // canvas.drawLine(mWidth / 2, 0, mWidth / 2 , mHeight, shadowPaint);
+        canvas.drawLine(mWidth / 2, 0, mWidth / 2, mHeight, redPaint);
 
     }
 
@@ -426,22 +474,22 @@ public class TunlView extends View {
         int hour = c.get(Calendar.HOUR_OF_DAY);
         int minute = c.get(Calendar.MINUTE);
         int second = c.get(Calendar.SECOND);
-        Log.e("wzytest","hour:"+hour+" minute:"+minute+" second:"+second );
+        Log.e("wzytest", "hour:" + hour + " minute:" + minute + " second:" + second);
 
         //一个mvalue代表25 秒，两个刻度中间间隔了（60/5）个mvalue
-        return ((hour * 60 + minute) * 60 + second) / (5*zoomLevel*ITME_SECOND);
-       // return 360;
+        return ((hour * 60 + minute) * 60 + second) / (5 * valueToSencond);
+        // return 360;
     }
 
-    public static String  getTime(float mValue) {
+    public static String getTime(float mValue) {
         // TODO: 2017/10/23  超过24小时 和 少于0小时的处理
 
-        int day = (int) (mValue*5*zoomLevel*ITME_SECOND/(3600*24));  // 天数
-        int hour = (int) ((mValue*5*zoomLevel*ITME_SECOND-(60*60*24)*day)/3600);
-        int minute = (int)(mValue*5*zoomLevel*ITME_SECOND - 3600*hour - (60*60*24)*day)/60;
-        int second = (int)mValue*5*zoomLevel*ITME_SECOND-hour*3600-minute*60 - (60*60*24)*day;
+        int day = (int) (mValue * 5 * valueToSencond / (3600 * 24));  // 天数
+        int hour = (int) ((mValue * 5 * valueToSencond - (60 * 60 * 24) * day) / 3600);
+        int minute = (int) (mValue * 5 * valueToSencond - 3600 * hour - (60 * 60 * 24) * day) / 60;
+        int second = (int) mValue * 5 * valueToSencond - hour * 3600 - minute * 60 - (60 * 60 * 24) * day;
 
-        AXLog.e("wzytest","hour:"+hour+" minute:"+minute+" second:"+second+" day:"+day);
+        AXLog.e("wzytest", "hour:" + hour + " minute:" + minute + " second:" + second + " day:" + day);
         Calendar calendar1 = Calendar.getInstance();
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -449,56 +497,99 @@ public class TunlView extends View {
          *  从00:00:00开始设置时间
          */
         calendar1.add(Calendar.DATE, day);
-        calendar1.set(Calendar.HOUR_OF_DAY,hour);
-        calendar1.set(Calendar.MINUTE,minute);
-        calendar1.set(Calendar.SECOND,second);
+        calendar1.set(Calendar.HOUR_OF_DAY, hour);
+        calendar1.set(Calendar.MINUTE, minute);
+        calendar1.set(Calendar.SECOND, second);
 
         String moveDate = sdf1.format(calendar1.getTime());
-        return  moveDate;
+        return moveDate;
     }
 
 
     /**
      * 获取录像起始或者结束时间的mvalue值
+     *
      * @param time 录像时间段time
      * @return
      */
-    private int getmValue(long time){
+    private int getmValue(long time) {
         /**
          *  从00:00:00开始设置时间
          */
-        calendar1.set(Calendar.HOUR_OF_DAY,0);
-        calendar1.set(Calendar.MINUTE,0);
-        calendar1.set(Calendar.SECOND,0);
+        calendar1.set(Calendar.HOUR_OF_DAY, 0);
+        calendar1.set(Calendar.MINUTE, 0);
+        calendar1.set(Calendar.SECOND, 0);
         long l1 = calendar1.getTimeInMillis();
-        return (int) (time-l1)/(5*ITME_SECOND*1000*zoomLevel);
+        return (int) (time - l1) / (5 * 1000 * valueToSencond);
     }
 
-    public static void setZoomLevel(double zoomLevel) {
-        TunlView.zoomLevel = (int)zoomLevel;
+    public static void setValueToSencond(double valueToSencond) {
+        TunlView.valueToSencond = (int) valueToSencond;
     }
 
-    public void setMode(int mode){
-        switch (mode){
-            case Mode_DAY:
-                zoomLevel = 30 ;
-                //useString = timeString4;
-               // initData();
+    /**
+     * 设置压缩模式
+     * 前面可以按照zoomlevel 10 20 30
+     * 后面可以按照zoomlevel  100 200 300 但是对应的标记尺度也从每小时一个刻度变为半天一个刻度
+     *
+     * @param mode
+     */
+    public void setMode(int mode) {
+        switch (mode) {
+            case Mode_1:  // 该模式下一小刻度代表5分钟  一大刻度代表半个小时
+                level = 1;
+                mModType = modType * level;
+                useString = timeString1;
+                initData();
                 break;
-            case Mode_HOUR:
-                zoomLevel = 2 ;
-               // useString = timeString2;
-              //  initData();
-                AXLog.e("wzytest","list on Mode_HOUR:"+list);
+            case Mode_2: // 该模式下一小刻度代表40分钟  一大刻度代表4个小时
+                level = 4;
+                mModType = modType * level;
+                useString = timeString3;
+                initData();
                 break;
-            case Mode_MINUTE:
-                zoomLevel = 1 ;
-               // useString = timeString;
-              //  initData();
-                AXLog.e("wzytest","list on Mode_MINUTE:"+list);
+            case Mode_3: //该模式下一小刻度代表120分钟  一大刻度代表12个小时
+                level = 12;
+                mModType = modType * level;
+                useString = timeString4;
+                initData();
                 break;
+            case Mode_4: //该模式下一小刻度代表240分钟  一大刻度代表一天
+                level = 24;
+                mModType = modType * level;
+                useString = timeString5;
+                initData();
+
+//            case Mode_2:
+//                valueToSencond = 50 ;
+//
+//               // useString = timeString2;
+//              //  initData();
+//                AXLog.e("wzytest","list on Mode_2:"+list);
+//                break;
+//            case Mode_1:
+//                valueToSencond = 10 ;
+//
+//               // useString = timeString1;
+//              //  initData();
+//                AXLog.e("wzytest","list on Mode_1:"+list);
+//                break;
+//            case Mode_4:
+//                valueToSencond = 110;
+//
+//                // useString = timeString1;
+//                //  initData();
+//                AXLog.e("wzytest","list on Mode_1:"+list);
+//                break;
+//            case Mode_5:
+//                valueToSencond = 130;
+//                // useString = timeString1;
+//                //  initData();
+//                AXLog.e("wzytest","list on Mode_1:"+list);
+//                break;
+
         }
-        postInvalidate();
+        invalidate();
     }
 
 
@@ -527,4 +618,6 @@ public class TunlView extends View {
         centerPointX = (xPoint0 + xPoint1) / 2;
         centerPointY = (yPoint0 + yPoint1) / 2;
     }
+
+
 }

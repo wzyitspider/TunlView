@@ -17,26 +17,75 @@
       android:layout_below="@+id/tv_time"
       android:layout_width="match_parent"
       android:layout_height="100dp" />
+
   <LinearLayout
+      android:id="@+id/ll1"
       android:layout_below="@+id/tunlview"
       android:layout_width="match_parent"
       android:layout_height="wrap_content">
+
+
     <Button
-        android:id="@+id/tv_minu"
-        android:layout_weight="1"
-        android:text="mode_minu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <Button
-        android:id="@+id/tv_hour"
+        android:id="@+id/mode1"
         android:layout_weight="1"
         android:text="mode_hour"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <Button
-        android:id="@+id/tv_day"
+        android:id="@+id/mode2"
         android:layout_weight="1"
         android:text="mode_day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/mode3"
+        android:layout_weight="1"
+        android:text="mode_day3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/mode4"
+        android:layout_weight="1"
+        android:text="mode_day4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+  </LinearLayout>
+
+
+  <LinearLayout
+      android:layout_below="@+id/ll1"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+
+    <Button
+        android:id="@+id/tv_1"
+        android:layout_weight="1"
+        android:text="tv_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/tv_2"
+        android:layout_weight="1"
+        android:text="tv_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/tv_3"
+        android:layout_weight="1"
+        android:text="tv_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/tv_4"
+        android:layout_weight="1"
+        android:text="tv_4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/tv_5"
+        android:layout_weight="1"
+        android:text="tv_5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
   </LinearLayout>
