@@ -82,8 +82,8 @@ public class TunlView extends View {
     int modType = 360 ,mModType = 360; // 30*60/5 一格大刻度量级(1个小时)
 
 
-    float mLineDivider = 2;//记录一刻度屏幕上得距离
-    private static  float lastItemDivider = 2;//缩放后一刻度得屏幕距离
+    float mLineDivider = 3;//记录一刻度屏幕上得距离
+    private static  float lastItemDivider = 3;//缩放后一刻度得屏幕距离
 
     private float mDensity;
     private float ITEM_MAX_HEIGHT = 30;
@@ -106,7 +106,7 @@ public class TunlView extends View {
             "17:00",  "18:00",  "19:00",  "20:00",  "21:00", "22:00",
             "23:00"};
 
-    private String[] timeString2 = {"00:00", "04:00", "08:00", "12:00", "16:00", "20:00"};
+    private String[] timeString2 = {"00:00", "03:00", "06:00", "9:00", "12:00", "15:00","18:00","21:00"};
 
 
 //    private String[] timeString3 = {"00:00", "6:00","12:00","18:00"};
@@ -143,6 +143,7 @@ public class TunlView extends View {
 
     TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 
+
     public TunlView(Context context) {
         super(context);
     }
@@ -165,7 +166,7 @@ public class TunlView extends View {
 
 
         initData();
-        shadowPaint.setStrokeWidth(4);
+        shadowPaint.setStrokeWidth(6);
         shadowPaint.setColor(Color.parseColor("#83D7DD"));
         shadowPaint.setAlpha(101);
 
@@ -248,11 +249,11 @@ public class TunlView extends View {
 
     //划线
     public void drawScaleLine(Canvas canvas) {
-//        AXLog.e("wzytest","drawScaleLine..."+mValue);
         linePaint.setStrokeWidth(2);
         linePaint.setColor(Color.BLACK);
 
         textPaint.setTextSize(TEXT_SIZE * mDensity);
+        textPaint.setTextSize(16);
         textWidth = Layout.getDesiredWidth("0", textPaint);
 
         int width = mWidth, drawCount = 0;
@@ -375,6 +376,7 @@ public class TunlView extends View {
                         AXLog.e("wzytest","Mode_0 时放大 和 Mode_4 时候缩小不做任何处理");
                     }else{
                         scaledRatio = (float) (fingerDis / lastFingerDis  );
+                        shadowPaint.setStrokeWidth(6*scaledRatio);
                         mLineDivider =  lastItemDivider * scaledRatio; //缩放后一刻度在屏幕上的距离
                     }
 
@@ -393,13 +395,13 @@ public class TunlView extends View {
                             initData();
                         }
                     }else if(currentStatus==STATUS_ZOOM_IN&&Mode==Mode_1){
-                        if(4*mLineDivider<2){
+                        if(3*mLineDivider<2){
                             // 复位，转变刻度尺模式
                             mLineDivider = 2;
                             lastItemDivider = 2;
                             useString = timeString2;
                             Mode = Mode_2;
-                            valueToSencond = 4*valueToSencond;
+                            valueToSencond = 3*valueToSencond;
                             AXLog.e("wzytest","mvalue:"+mValue);
                             //重新获取当前value
                             mValue = getNowValue();
@@ -465,12 +467,12 @@ public class TunlView extends View {
                             initData();
                         }
                     }else if(currentStatus==STATUS_ZOOM_OUT&&Mode==Mode_2){
-                        if(mLineDivider/4>2){
+                        if(mLineDivider/3>2){
                             mLineDivider = 2;
                             lastItemDivider = 2;
                             useString = timeString1;
                             Mode = Mode_1;
-                            valueToSencond = valueToSencond/4;
+                            valueToSencond = valueToSencond/3;
                             mValue = getNowValue();
                             //重新计算蓝色录像时间轴
                             initData();
