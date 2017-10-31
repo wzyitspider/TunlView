@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * Created by aaron on 15/11/27.
+ * Created by wzy on 15/11/27.
  * 模仿logger，创建自己的日志操作类
  */
 public class AXLog {

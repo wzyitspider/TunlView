@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -14,11 +13,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.tunlview.view.TunlView.ZOOMLEVEL_INIT_1;
-import static com.tunlview.view.TunlView.ZOOMLEVEL_INIT_2;
-import static com.tunlview.view.TunlView.ZOOMLEVEL_INIT_3;
-import static com.tunlview.view.TunlView.ZOOMLEVEL_INIT_4;
-import static com.tunlview.view.TunlView.ZOOMLEVEL_INIT_5;
 import static com.tunlview.view.TunlView.getTime;
 
 public class MainActivity extends AppCompatActivity {
@@ -69,67 +63,6 @@ public class MainActivity extends AppCompatActivity {
         mode2 = (Button) findViewById(R.id.mode2);
         mode3 = (Button) findViewById(R.id.mode3);
         mode4 = (Button) findViewById(R.id.mode4);
-        tv1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tunlView.setValueToSencond(ZOOMLEVEL_INIT_1);
-                tunlView.postInvalidate();
-            }
-        });
-        tv2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tunlView.setValueToSencond(ZOOMLEVEL_INIT_2);
-                tunlView.postInvalidate();
-
-            }
-        });
-        tv3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tunlView.setValueToSencond(ZOOMLEVEL_INIT_3);
-                tunlView.postInvalidate();
-            }
-        });
-        tv4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tunlView.setValueToSencond(ZOOMLEVEL_INIT_4);
-                tunlView.postInvalidate();
-            }
-        });
-        tv5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tunlView.setValueToSencond(ZOOMLEVEL_INIT_5);
-                tunlView.postInvalidate();
-            }
-        });
-
-        mode1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tunlView.setMode(TunlView.Mode_1);
-            }
-        });
-        mode2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tunlView.setMode(TunlView.Mode_2);
-            }
-        });
-        mode3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tunlView.setMode(TunlView.Mode_3);
-            }
-        });
-        mode4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tunlView.setMode(TunlView.Mode_4);
-            }
-        });
         tunlView.setmListener(new OnValueChangeListener() {
             @Override
             public void onValueChange(float value) {

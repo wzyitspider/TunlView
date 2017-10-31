@@ -19,6 +19,7 @@
       android:layout_height="100dp" />
 
   <LinearLayout
+      android:visibility="gone"
       android:id="@+id/ll1"
       android:layout_below="@+id/tunlview"
       android:layout_width="match_parent"
@@ -53,6 +54,7 @@
 
 
   <LinearLayout
+      android:visibility="gone"
       android:layout_below="@+id/ll1"
       android:layout_width="match_parent"
       android:layout_height="wrap_content">

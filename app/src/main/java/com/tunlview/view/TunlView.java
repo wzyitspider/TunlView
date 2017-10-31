@@ -43,12 +43,6 @@ public class TunlView extends View {
     public static final int STATUS_ZOOM_IN = 3;
 
     /**
-     * 图片拖动状态常量
-     */
-    public static final int STATUS_MOVE = 4;
-
-
-    /**
      * 记录两指同时放在屏幕上时，中心点的横坐标值
      */
     private float centerPointX;
@@ -69,39 +63,27 @@ public class TunlView extends View {
     private int currentStatus;
 
 
-    public static final int Mode_1 = 1;
-    public static final int Mode_2 = 2;
-    public static final int Mode_3 = 3;
-    public static final int Mode_4 = 4;
-    public static final int Mode_5 = 5;
-
-
-    private static final int ITEM_250_SECOND_DIVIDER = 2;// 250秒的单位宽度
-
     private static final float TEXT_SIZE = 12;
 
     public int mWidth;
     public int mHeight;
     int mlastX, mMove;
 
+
     public static final int ZOOMLEVEL_INIT_1 = 10;
-    public static final int ZOOMLEVEL_INIT_2 = 30;
-    public static final int ZOOMLEVEL_INIT_3 = 80;
-    public static final int ZOOMLEVEL_INIT_4 = 120;
-    public static final int ZOOMLEVEL_INIT_5 = 240;
 
-    private int ZOOMLEVEL_INIT = ZOOMLEVEL_INIT_1;
+    public static int valueToSencond = 100 ;  //每个value代表多少秒
 
-    public static int valueToSencond = ZOOMLEVEL_INIT_2;  //每个value代表多少秒
 
-    public static int level = 1;  //缩放级别
-
-    private int REFRESH_TIME = 5 * 1000 * valueToSencond;
+    private int REFRESH_TIME =  valueToSencond*1000;
 
     int mValue;
 
     int modType = 360 ,mModType = 360; // 30*60/5 一格大刻度量级(1个小时)
-    int mLineDivider = ITEM_250_SECOND_DIVIDER;
+
+
+    float mLineDivider = 2;//记录一刻度屏幕上得距离
+    private static  float lastItemDivider = 2;//缩放后一刻度得屏幕距离
 
     private float mDensity;
     private float ITEM_MAX_HEIGHT = 30;
@@ -112,24 +94,39 @@ public class TunlView extends View {
     SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     List<OneDayRecordInfo> list = new ArrayList<>();
-    private String[] timeString1 = {"00:00", "00:30", "01:00", "01:30", "02:00", "02:30", "03:00", "03:30", "04:00", "04:30",
+    private String[] timeString0 = {"00:00", "00:30", "01:00", "01:30", "02:00", "02:30", "03:00", "03:30", "04:00", "04:30",
             "05:00", "05:30", "06:00", "06:30", "07:00", "07:30", "08:00", "08:30", "09:00", "09:30", "10:00", "10:30",
             "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
             "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30",
             "23:00", "23:30"};
 
-    private String[] timeString2 = {"00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00",
-            "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00",};
+    private String[] timeString1 = {"00:00",  "01:00",  "02:00", "03:00",  "04:00",
+            "05:00",  "06:00",  "07:00",  "08:00", "09:00",  "10:00",
+            "11:00",  "12:00",  "13:00",  "14:00",  "15:00",  "16:00",
+            "17:00",  "18:00",  "19:00",  "20:00",  "21:00", "22:00",
+            "23:00"};
 
-    private String[] timeString3 = {"00:00", "04:00", "08:00", "12:00", "16:00", "20:00"};
+    private String[] timeString2 = {"00:00", "04:00", "08:00", "12:00", "16:00", "20:00"};
 
-    private String[] timeString4 = {"00:00", "12:00"};
 
-    private String[] timeString5 = {"00:00"};
+//    private String[] timeString3 = {"00:00", "6:00","12:00","18:00"};
+
+
+    private String[] timeString3 = {"00:00", "12:00"};
+
+    private String[] timeString4 = {"00:00"};
+
+    public int Mode = Mode_1 ;  // 当前的刻度尺缩放模式，默认模式一
+
+    public static final int Mode_0 = 0; //模式一,当前刻度尺显示timeString0
+    public static final int Mode_1 = 1; //模式一,当前刻度尺显示timeString1
+    public static final int Mode_2 = 2; //模式一,当前刻度尺显示timeString2
+    public static final int Mode_3 = 3; //模式一,当前刻度尺显示timeString3
+    public static final int Mode_4 = 4; //模式一,当前刻度尺显示timeString4
+    public static final int Mode_5 = 5; //模式一,当前刻度尺显示timeString5
+
     public String[] useString;
     private float scaledRatio;
-    private int newlevel;
-
 
     public OnValueChangeListener getmListener() {
         return mListener;
@@ -152,23 +149,26 @@ public class TunlView extends View {
 
     public TunlView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        useString = timeString2;
+        useString = timeString1;
         mDensity = getContext().getResources().getDisplayMetrics().density;
         setBackgroundResource(R.drawable.bg_wheel);
+
         //过二十五秒让mValue自增一次
         postDelayed(new Runnable() {
             @Override
             public void run() {
-                postDelayed(this, REFRESH_TIME * valueToSencond);
+                postDelayed(this, valueToSencond*1000);
                 mValue++;
                 postInvalidate();
             }
-        }, REFRESH_TIME * valueToSencond);
+        },  valueToSencond*1000);
+
+
         initData();
         shadowPaint.setStrokeWidth(4);
         shadowPaint.setColor(Color.parseColor("#83D7DD"));
         shadowPaint.setAlpha(101);
-        setMode(Mode_3);
+
     }
 
 
@@ -261,16 +261,15 @@ public class TunlView extends View {
 
         for (int i = 0; drawCount < width * 2; i++) {
             xPosition = (mWidth / 2 + mMove) + i * mDensity * (mLineDivider);
-            if ((valueToSencond * (mValue + i)) % mModType == 0) {
+            if ((ZOOMLEVEL_INIT_1 * (mValue + i)) % mModType == 0) {
                 canvas.drawLine(xPosition, 0, xPosition, mDensity * ITEM_MAX_HEIGHT, linePaint);
-                if (((valueToSencond * (mValue + i)) / mModType % useString.length) < 0) {
-                    canvas.drawText(useString[useString.length + ((valueToSencond * (mValue + i)) / mModType % useString.length)], countLeftStart(mValue + i, xPosition, textWidth), getHeight() - textWidth, textPaint);
+                if (((ZOOMLEVEL_INIT_1 * (mValue + i)) / mModType % useString.length) < 0) {
+                    canvas.drawText(useString[useString.length + ((ZOOMLEVEL_INIT_1 * (mValue + i)) / mModType % useString.length)], countLeftStart(mValue + i, xPosition, textWidth), getHeight() - textWidth, textPaint);
                 } else {
-                    canvas.drawText(useString[(valueToSencond * (mValue + i)) / mModType % useString.length], countLeftStart(mValue + i, xPosition, textWidth), getHeight() - textWidth, textPaint);
+                    canvas.drawText(useString[(ZOOMLEVEL_INIT_1 * (mValue + i)) / mModType % useString.length], countLeftStart(mValue + i, xPosition, textWidth), getHeight() - textWidth, textPaint);
                 }
             } else {
-//                if (valueToSencond * (mValue + i) % (60 * level) == 0) {
-                if (valueToSencond * (mValue + i) % (60 ) == 0) {
+                if (ZOOMLEVEL_INIT_1 * (mValue + i) % 60 == 0) {
                     canvas.drawLine(xPosition, 0, xPosition, mDensity * ITEM_MIN_HEIGHT, linePaint);
                 }
             }
@@ -285,16 +284,15 @@ public class TunlView extends View {
             }
 
             xPosition = (mWidth / 2 + mMove) - i * mDensity * (mLineDivider);
-            if ((valueToSencond * (mValue - i)) % mModType == 0) {
+            if ((ZOOMLEVEL_INIT_1 * (mValue - i)) % mModType == 0) {
                 canvas.drawLine(xPosition, 0, xPosition, mDensity * ITEM_MAX_HEIGHT, linePaint);
-                if (((valueToSencond * (mValue - i)) / mModType % useString.length) < 0) {
-                    canvas.drawText(useString[useString.length + ((valueToSencond * (mValue - i)) / mModType % useString.length)], countLeftStart(mValue - i, xPosition, textWidth), getHeight() - textWidth, textPaint);
+                if (((ZOOMLEVEL_INIT_1 * (mValue - i)) / mModType % useString.length) < 0) {
+                    canvas.drawText(useString[useString.length + ((ZOOMLEVEL_INIT_1 * (mValue - i)) / mModType % useString.length)], countLeftStart(mValue - i, xPosition, textWidth), getHeight() - textWidth, textPaint);
                 } else {
-                    canvas.drawText(useString[(valueToSencond * (mValue - i)) / mModType % useString.length], countLeftStart(mValue - i, xPosition, textWidth), getHeight() - textWidth, textPaint);
+                    canvas.drawText(useString[(ZOOMLEVEL_INIT_1 * (mValue - i)) / mModType % useString.length], countLeftStart(mValue - i, xPosition, textWidth), getHeight() - textWidth, textPaint);
                 }
             } else {
-                //if (valueToSencond * (mValue - i) % (60 * level) == 0) {
-                if (valueToSencond * (mValue - i) % (60 ) == 0) {
+                if (ZOOMLEVEL_INIT_1 * (mValue - i) % 60 == 0) {
                     canvas.drawLine(xPosition, 0, xPosition, mDensity * ITEM_MIN_HEIGHT, linePaint);
                 }
             }
@@ -344,11 +342,6 @@ public class TunlView extends View {
                 }
                 break;
             case MotionEvent.ACTION_DOWN:
-                if (event.getPointerCount() == 2) {
-                    // 当有两个手指按在屏幕上时，计算两指之间的距离
-                    lastFingerDis = distanceBetweenFingers(event);
-                    AXLog.e("wzytest", "当有两个手指按在屏幕上时，计算两指之间的距离" + lastFingerDis);
-                }
                 mlastX = xPosition;
                 mMove = 0;
                 Log.d("wzytest", "ACTION_DOWN");
@@ -357,63 +350,153 @@ public class TunlView extends View {
                 //当滑动到停止，改变当前刻度值
                 xMove = (int) (mMove / (mLineDivider * mDensity));
                 mValue -= xMove;
-////                mValue = mValue <= 0 ? 0 : mValue;
-////                mValue = mValue > mMaxValue ? mMaxValue : mValue;
                 notifyValueChange();
                 mMove = 0;
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (event.getPointerCount() == 1) {
-                    AXLog.e("wzytest", "mvalue:" + mValue);
                     mMove = xPosition - mlastX;
                     xMove = (int) (mMove / (mLineDivider * mDensity));
                     mValue -= xMove;
                     notifyValueChange();
                     invalidate();
                 } else if (event.getPointerCount() == 2) {
-                    newlevel = valueToSencond;
                     // 有两个手指按在屏幕上移动时，为缩放状态
                     centerPointBetweenFingers(event);
                     double fingerDis = distanceBetweenFingers(event);
+
                     if (fingerDis > lastFingerDis) {
                         currentStatus = STATUS_ZOOM_OUT;
                     } else {
                         currentStatus = STATUS_ZOOM_IN;
                     }
-                    AXLog.e("wzytest","newlevel:"+newlevel +" ZOOMLEVEL_INIT:"+ZOOMLEVEL_INIT);
-                    // 进行缩放倍数检查，最大只允许将图片放大4倍，最小可以缩小到初始化比例
-                    if ((currentStatus == STATUS_ZOOM_OUT && newlevel > ZOOMLEVEL_INIT / 4) ||
-                            (currentStatus == STATUS_ZOOM_IN && newlevel < ZOOMLEVEL_INIT * 6)) {
-                        scaledRatio = (float) (fingerDis / lastFingerDis);
-                        newlevel = (int) (newlevel/scaledRatio);
 
-                        AXLog.e("wzytest", "newlevel:" + newlevel);
-                        if (newlevel > 6 * ZOOMLEVEL_INIT) {
-                            newlevel = 6 * ZOOMLEVEL_INIT;
-                        } else if (newlevel < ZOOMLEVEL_INIT / 4) {
-                            newlevel = ZOOMLEVEL_INIT / 4;
-                        }
-                        AXLog.e("wzytest", "newlevel:" + newlevel);
-                        setValueToSencond(newlevel);
-                        // 调用onDraw()方法绘制图片
-                        invalidate();
-                        //lastFingerDis = fingerDis;
+                    if(Mode==Mode_0&&currentStatus==STATUS_ZOOM_OUT||Mode==Mode_4&&currentStatus==STATUS_ZOOM_IN){
+                        AXLog.e("wzytest","Mode_0 时放大 和 Mode_4 时候缩小不做任何处理");
+                    }else{
+                        scaledRatio = (float) (fingerDis / lastFingerDis  );
+                        mLineDivider =  lastItemDivider * scaledRatio; //缩放后一刻度在屏幕上的距离
                     }
 
-//                    int newlevel = valueToSencond;
-//                    if((fingerDis/lastFingerDis)<10.00&&(fingerDis / lastFingerDis)>0.1){
-//                        if( newlevel > 10*ZOOMLEVEL_INIT){
-//                            newlevel = 10*ZOOMLEVEL_INIT;
-//                        }else if(newlevel < 0.1*ZOOMLEVEL_INIT){
-//                            newlevel = (int) (0.1*ZOOMLEVEL_INIT);
-//                        }else{
-//                            newlevel = (int) (valueToSencond*(fingerDis/lastFingerDis));
-//                        }
-//                        AXLog.e("wzytest","newlevel:"+newlevel);
-//                        setValueToSencond(newlevel);
-//                    }
-//                    invalidate();
-//                    lastFingerDis = fingerDis;
+                    if(currentStatus==STATUS_ZOOM_IN&&Mode==Mode_0){
+                        if(2*mLineDivider<2){
+                            // 复位，转变刻度尺模式
+                            mLineDivider = 2;
+                            lastItemDivider = 2;
+                            useString = timeString1;
+                            Mode = Mode_1;
+                            valueToSencond = 2*valueToSencond;
+                            AXLog.e("wzytest","mvalue:"+mValue);
+                            //重新获取当前value
+                            mValue = getNowValue();
+                            //重新计算蓝色录像时间轴
+                            initData();
+                        }
+                    }else if(currentStatus==STATUS_ZOOM_IN&&Mode==Mode_1){
+                        if(4*mLineDivider<2){
+                            // 复位，转变刻度尺模式
+                            mLineDivider = 2;
+                            lastItemDivider = 2;
+                            useString = timeString2;
+                            Mode = Mode_2;
+                            valueToSencond = 4*valueToSencond;
+                            AXLog.e("wzytest","mvalue:"+mValue);
+                            //重新获取当前value
+                            mValue = getNowValue();
+                            //重新计算蓝色录像时间轴
+                            initData();
+                        }
+                    }else if(currentStatus==STATUS_ZOOM_IN&&Mode==Mode_2){
+                        if(3*mLineDivider<2){
+                            // 复位，转变刻度尺模式
+                            mLineDivider = 2;
+                            lastItemDivider = 2;
+                            useString = timeString3;
+                            Mode = Mode_3;
+                            valueToSencond = 3*valueToSencond;
+                            AXLog.e("wzytest","mvalue:"+mValue);
+                            //重新获取当前value
+                            mValue = getNowValue();
+                            //重新计算蓝色录像时间轴
+                            initData();
+                        }
+
+                    }else if(currentStatus==STATUS_ZOOM_IN&&Mode==Mode_3){
+                        AXLog.e("wzytest","跳转到了最后得刻度尺模式");
+                        if(2*mLineDivider<2){
+                            // 复位，转变刻度尺模式
+                            mLineDivider = 2;
+                            lastItemDivider = 2;
+                            useString = timeString4;
+                            Mode = Mode_4;
+                            valueToSencond = 2*valueToSencond;
+                            // 重新获取当前value
+                            mValue = getNowValue();
+                            //重新计算蓝色录像时间轴
+                            initData();
+                        }
+                    }
+
+
+                    if(currentStatus==STATUS_ZOOM_OUT&&Mode==Mode_4){
+                        if(mLineDivider/2>2){
+                            mLineDivider = 2;
+                            lastItemDivider = 2;
+                            useString = timeString3;
+                            Mode = Mode_3;
+                            valueToSencond = valueToSencond/2;
+                            //重新获取当前value
+                            mValue = getNowValue();
+                            //重新计算蓝色录像时间轴
+                            initData();
+                        }
+                    }else if(currentStatus==STATUS_ZOOM_OUT&&Mode==Mode_3){
+                        if(mLineDivider/3>2){
+                            mLineDivider = 2;
+                            lastItemDivider = 2;
+                            useString = timeString2;
+                            Mode = Mode_2;
+                            valueToSencond = valueToSencond/3;
+                            AXLog.e("wzytest","mvalue:"+mValue);
+                            //重新获取当前value
+                            mValue = getNowValue();
+                            AXLog.e("wzytest","重新获取的value:"+mValue);
+                            //重新计算蓝色录像时间轴
+                            initData();
+                        }
+                    }else if(currentStatus==STATUS_ZOOM_OUT&&Mode==Mode_2){
+                        if(mLineDivider/4>2){
+                            mLineDivider = 2;
+                            lastItemDivider = 2;
+                            useString = timeString1;
+                            Mode = Mode_1;
+                            valueToSencond = valueToSencond/4;
+                            mValue = getNowValue();
+                            //重新计算蓝色录像时间轴
+                            initData();
+                        }
+                    }else if(currentStatus==STATUS_ZOOM_OUT&&Mode==Mode_1){
+                        if(mLineDivider/2>2){
+                            mLineDivider = 2;
+                            lastItemDivider = 2;
+                            useString = timeString0;
+                            Mode = Mode_0;
+                            valueToSencond = valueToSencond/2;
+                            //重新获取当前value
+                            mValue = getNowValue();
+                            //重新计算蓝色录像时间轴
+                            initData();
+                        }
+                    }
+
+                    AXLog.e("wzytest","itemDivider:"+mLineDivider+" lastItemDivider:"+lastItemDivider);
+                    postInvalidate();
+                }
+                break;
+            case MotionEvent.ACTION_POINTER_UP:
+                if (event.getPointerCount() == 2) {
+                    //lastValueTosecond = valueToSencond;
+                    lastItemDivider = mLineDivider;
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:
@@ -453,7 +536,7 @@ public class TunlView extends View {
     }
 
     /**
-     * 画中间的红色指示线、阴影等。指示线两端简单的用了两个矩形代替
+     * 画中间的红色指示线
      *
      * @param canvas
      */
@@ -477,17 +560,17 @@ public class TunlView extends View {
         Log.e("wzytest", "hour:" + hour + " minute:" + minute + " second:" + second);
 
         //一个mvalue代表25 秒，两个刻度中间间隔了（60/5）个mvalue
-        return ((hour * 60 + minute) * 60 + second) / (5 * valueToSencond);
+        return ((hour * 60 + minute) * 60 + second) / valueToSencond ;
         // return 360;
     }
 
     public static String getTime(float mValue) {
         // TODO: 2017/10/23  超过24小时 和 少于0小时的处理
 
-        int day = (int) (mValue * 5 * valueToSencond / (3600 * 24));  // 天数
-        int hour = (int) ((mValue * 5 * valueToSencond - (60 * 60 * 24) * day) / 3600);
-        int minute = (int) (mValue * 5 * valueToSencond - 3600 * hour - (60 * 60 * 24) * day) / 60;
-        int second = (int) mValue * 5 * valueToSencond - hour * 3600 - minute * 60 - (60 * 60 * 24) * day;
+        int day = (int) (mValue *  valueToSencond / (3600 * 24));  // 天数
+        int hour = (int) ((mValue *  valueToSencond - (60 * 60 * 24) * day) / 3600);
+        int minute = (int) (mValue * valueToSencond - 3600 * hour - (60 * 60 * 24) * day) / 60;
+        int second = (int) mValue * valueToSencond - hour * 3600 - minute * 60 - (60 * 60 * 24) * day;
 
         AXLog.e("wzytest", "hour:" + hour + " minute:" + minute + " second:" + second + " day:" + day);
         Calendar calendar1 = Calendar.getInstance();
@@ -520,78 +603,8 @@ public class TunlView extends View {
         calendar1.set(Calendar.MINUTE, 0);
         calendar1.set(Calendar.SECOND, 0);
         long l1 = calendar1.getTimeInMillis();
-        return (int) (time - l1) / (5 * 1000 * valueToSencond);
+        return (int) (time - l1) / (1000 * valueToSencond);
     }
-
-    public static void setValueToSencond(double valueToSencond) {
-        TunlView.valueToSencond = (int) valueToSencond;
-    }
-
-    /**
-     * 设置压缩模式
-     * 前面可以按照zoomlevel 10 20 30
-     * 后面可以按照zoomlevel  100 200 300 但是对应的标记尺度也从每小时一个刻度变为半天一个刻度
-     *
-     * @param mode
-     */
-    public void setMode(int mode) {
-        switch (mode) {
-            case Mode_1:  // 该模式下一小刻度代表5分钟  一大刻度代表半个小时
-                level = 1;
-                mModType = modType * level;
-                useString = timeString1;
-                initData();
-                break;
-            case Mode_2: // 该模式下一小刻度代表40分钟  一大刻度代表4个小时
-                level = 4;
-                mModType = modType * level;
-                useString = timeString3;
-                initData();
-                break;
-            case Mode_3: //该模式下一小刻度代表120分钟  一大刻度代表12个小时
-                level = 12;
-                mModType = modType * level;
-                useString = timeString4;
-                initData();
-                break;
-            case Mode_4: //该模式下一小刻度代表240分钟  一大刻度代表一天
-                level = 24;
-                mModType = modType * level;
-                useString = timeString5;
-                initData();
-
-//            case Mode_2:
-//                valueToSencond = 50 ;
-//
-//               // useString = timeString2;
-//              //  initData();
-//                AXLog.e("wzytest","list on Mode_2:"+list);
-//                break;
-//            case Mode_1:
-//                valueToSencond = 10 ;
-//
-//               // useString = timeString1;
-//              //  initData();
-//                AXLog.e("wzytest","list on Mode_1:"+list);
-//                break;
-//            case Mode_4:
-//                valueToSencond = 110;
-//
-//                // useString = timeString1;
-//                //  initData();
-//                AXLog.e("wzytest","list on Mode_1:"+list);
-//                break;
-//            case Mode_5:
-//                valueToSencond = 130;
-//                // useString = timeString1;
-//                //  initData();
-//                AXLog.e("wzytest","list on Mode_1:"+list);
-//                break;
-
-        }
-        invalidate();
-    }
-
 
     /**
      * 计算两个手指之间的距离。
