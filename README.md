@@ -1,8 +1,8 @@
 ##一、前言
 最近公司需要，需要一个视频播放条控件，可以将控件与时间对应起来，也可以对控件进行移动和缩放。（PS：公司是做摄像头的）移动到某个位置就播放该位置对应时间戳的视频录像，当然，并非任何时间点都有录像文件，所有录像的时间段用蓝色覆盖，代表该段时间可以进行录像回放，不在该蓝色区域内代表不能回放。最终完成效果如下
 
-### 整体效果截图（小公司,美工没有!UI设计,奇丑!凑合着看吧）
-![这里写图片描述]![这里写图片描述](http://img.blog.csdn.net/20171101162040025?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvd3p5OTAxMjEz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+### 整体效果截图
+![这里写图片描述](http://img.blog.csdn.net/20171101170811915?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvd3p5OTAxMjEz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
 
 ### 缩放效果截图
 ![缩放效果](http://img.blog.csdn.net/20171101145325971?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvd3p5OTAxMjEz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
