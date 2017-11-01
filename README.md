@@ -1,7 +1,8 @@
 
-<iframe height=500 width=500 src="https://gitee.com/wzy901213145499/Tunlview/blob/master/滑动.gif">
+![](https://gitee.com/wzy901213145499/Tunlview/blob/master/缩放.png)
 
-<iframe height=500 width=500 src=https://gitee.com/wzy901213145499/Tunlview/blob/master/缩放.gif">
+![](https://gitee.com/wzy901213145499/Tunlview/blob/master/滑动.png)
+
 
 背景：
 
