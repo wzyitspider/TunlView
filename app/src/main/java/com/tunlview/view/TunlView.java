@@ -574,6 +574,11 @@ public class TunlView extends View {
         // return 360;
     }
 
+    /**
+     * 获取mValue 所对应的时间
+     * @param mValue
+     * @return
+     */
     public static String getTime(float mValue) {
         // TODO: 2017/10/23  超过24小时 和 少于0小时的处理
 
@@ -600,8 +605,7 @@ public class TunlView extends View {
 
 
     /**
-     * 获取录像起始或者结束时间的mvalue值
-     *
+     * 获取时间戳所对应的mvalue
      * @param time 录像时间段time
      * @return
      */
