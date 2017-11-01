@@ -1,6 +1,6 @@
 package com.tunlview;
 
-public class OneDayRecordInfo {
+public class RecordInfo {
 
     private long startTime;
     private long endTime;
@@ -24,17 +24,9 @@ public class OneDayRecordInfo {
         this.endValue = endValue;
     }
 
-    @Override
-    public String toString() {
-        // TODO Auto-generated method stub
-        return " startTime:" + startTime + " endTime:" + endTime +  " startValue:"+startValue+" endValue:"+endValue;
-    }
-
-
-    public OneDayRecordInfo() {
+    public RecordInfo() {
         super();
     }
-
 
     public long getStartTime() {
         return startTime;
@@ -52,19 +44,11 @@ public class OneDayRecordInfo {
         this.endTime = endTime;
     }
 
-//    /**
-//     * @return currentDate
-//     */
-//    public String getCurrentDate() {
-//        return CurrentDate;
-//    }
-//
-//    /**
-//     * @param currentDate 要设置的 currentDate
-//     */
-//    public void setCurrentDate(String currentDate) {
-//        CurrentDate = currentDate;
-//    }
+    @Override
+    public String toString() {
+        // TODO Auto-generated method stub
+        return " startTime:" + startTime + " endTime:" + endTime + " startValue:" + startValue + " endValue:" + endValue;
+    }
 
 
 }

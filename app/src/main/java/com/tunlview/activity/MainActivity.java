@@ -1,12 +1,14 @@
-package com.tunlview;
+package com.tunlview.activity;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Button;
 import android.widget.TextView;
 
+import com.tunlview.OnValueChangeListener;
+import com.tunlview.R;
+import com.tunlview.util.AXLog;
 import com.tunlview.view.TunlView;
 
 import java.text.ParseException;
@@ -21,16 +23,6 @@ public class MainActivity extends AppCompatActivity {
     TunlView tunlView ;
     public static final int REFRESH_TIMERTV = 1;
 
-    Button tv1 ;
-    Button tv2 ;
-    Button tv3 ;
-    Button tv4 ;
-    Button tv5 ;
-
-    Button mode1;
-    Button mode2;
-    Button mode3;
-    Button mode4;
     Handler handler =  new Handler(){
 
         @Override
@@ -54,15 +46,6 @@ public class MainActivity extends AppCompatActivity {
         textView = (TextView) findViewById(R.id.tv_time);
         tunlView = (TunlView) findViewById(R.id.tunlview);
         textView.setText(""+tunlView.getValue());
-        tv1 = (Button) findViewById(R.id.tv_1);
-        tv2 = (Button) findViewById(R.id.tv_2);
-        tv3 = (Button) findViewById(R.id.tv_3);
-        tv4 = (Button) findViewById(R.id.tv_4);
-        tv5 = (Button) findViewById(R.id.tv_5);
-        mode1 = (Button) findViewById(R.id.mode1);
-        mode2 = (Button) findViewById(R.id.mode2);
-        mode3 = (Button) findViewById(R.id.mode3);
-        mode4 = (Button) findViewById(R.id.mode4);
         tunlView.setmListener(new OnValueChangeListener() {
             @Override
             public void onValueChange(float value) {
@@ -80,20 +63,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-//    public void initData(){
-//        OneDayRecordInfo info1 = new OneDayRecordInfo();
-//        info1.setStartTime("00:00:00");
-//        info1.setEndTime("23:59:59");
-//
-//
-//        OneDayRecordInfo info2 = new OneDayRecordInfo();
-//        info1.setStartTime("00:00:00");
-//        info1.setEndTime("11:45:21");
-//
-//    }
-
-
     public void getNowTime(){
         String str = (String) textView.getText();
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -106,20 +75,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-//    public Date getdate(int i) // //获取前后日期 i为正数 向后推迟i天，负数时向前提前i天
-//    {
-////        Date dat = null;
-////        Calendar cd = Calendar.getInstance();
-////        cd.add(Calendar.DATE, i);
-////        dat = cd.getTime();
-////        SimpleDateFormat dformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-////        Timestamp date = Timestamp.valueOf(dformat.format(dat));
-////        return date;
-//        Calendar calendar1 = Calendar.getInstance();
-//        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyyMMdd");
-//        calendar1.add(Calendar.DATE, -3);
-//        String three_days_ago = sdf1.format(calendar1.getTime());
-//        System.out.println(three_days_ago);
-//    }
 }
