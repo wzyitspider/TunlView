@@ -5,7 +5,7 @@
     <!-- two set color way -->
     <gradient
         android:angle="0"
-        android:centerColor="#FFF"
+        android:centerColor="#AAA"
         android:endColor="#AAA"
         android:startColor="#AAA" />
 

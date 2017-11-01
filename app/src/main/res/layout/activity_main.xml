@@ -5,16 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.tunlview.activity.MainActivity">
+
   <TextView
+      android:layout_marginTop="100dp"
       android:text="00:00"
       android:layout_centerHorizontal="true"
       android:id="@+id/tv_time"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content" />
   <com.tunlview.view.TunlView
+      android:layout_below="@+id/tv_time"
       android:id="@+id/tunlview"
       android:layout_marginTop="10dp"
-      android:layout_below="@+id/tv_time"
       android:layout_width="match_parent"
       android:layout_height="100dp" />
 
